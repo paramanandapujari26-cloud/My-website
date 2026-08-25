@@ -1,10 +1,167 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My First Website</title>
-  </head>
-  <body>
-    <h1>Hello, World!</h1>
-    <p>My GitHub website is live.</p>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EstimateFlow - Smart Project & Rate Estimator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-200">
+
+    <!-- Header Navigation -->
+    <nav class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-calculator text-brand-600 text-2xl"></i>
+                <span class="font-bold text-xl tracking-tight">Estimate<span class="text-brand-600">Flow</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-moon text-lg" id="themeIcon"></i>
+                </button>
+                <a href="#pro" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition">Upgrade to Pro</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="max-w-4xl mx-auto text-center py-12 px-4">
+        <span class="bg-brand-500/10 text-brand-600 dark:text-brand-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Free Freelancer Tool</span>
+        <h1 class="text-4xl md:text-5xl font-extrabold mt-4 tracking-tight">Calculate Fair Project Rates & Revenue Instantly</h1>
+        <p class="text-slate-600 dark:text-slate-400 text-lg mt-3">Stop undercharging. Estimate costs, factor in taxes and profit margins, and export professional quotes.</p>
+    </header>
+
+    <!-- Main Tool Container -->
+    <main class="max-w-5xl mx-auto px-4 pb-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Input Form (Left 2 Columns) -->
+        <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-6">
+            <h2 class="text-xl font-bold border-b border-slate-100 dark:border-slate-700 pb-3">Project Variables</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Estimated Hours</label>
+                    <input type="number" id="hours" value="40" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Target Hourly Rate ($)</label>
+                    <input type="number" id="hourlyRate" value="50" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Expenses / Software ($)</label>
+                    <input type="number" id="expenses" value="150" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Profit Margin (%)</label>
+                    <input type="number" id="margin" value="15" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Estimated Tax Rate (%)</label>
+                    <input type="number" id="tax" value="20" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Summary & Monetization Sidebar (Right 1 Column) -->
+        <div class="space-y-6">
+            <div class="bg-brand-600 text-white p-6 rounded-2xl shadow-lg">
+                <h3 class="text-sm uppercase tracking-wider font-semibold opacity-80">Recommended Quote</h3>
+                <div class="text-4xl font-black mt-2" id="totalQuote">$0.00</div>
+                <p class="text-xs mt-1 text-brand-100">Includes taxes, margins, and expenses.</p>
+                
+                <hr class="border-brand-500 my-4">
+
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="opacity-80">Base Labor:</span>
+                        <span class="font-semibold" id="baseLabor">$0.00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-80">Margin Amount:</span>
+                        <span class="font-semibold" id="marginVal">$0.00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="opacity-80">Set Aside for Taxes:</span>
+                        <span class="font-semibold" id="taxVal">$0.00</span>
+                    </div>
+                </div>
+
+                <button onclick="alert('PDF Export Available in Pro Version!')" class="w-full mt-6 bg-white text-brand-700 hover:bg-slate-100 font-bold py-2.5 rounded-lg transition text-sm">
+                    <i class="fa-solid fa-file-pdf mr-2"></i> Export PDF Quote
+                </button>
+            </div>
+
+            <!-- Monetization Block: Native Affiliate Ad -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
+                <span class="text-[10px] text-slate-400 uppercase tracking-widest block mb-2">Recommended Tool</span>
+                <p class="text-sm font-semibold">Managing client invoices?</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">Try the top-rated invoicing software for professionals.</p>
+                <a href="#" target="_blank" class="inline-block bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-xs font-bold py-2 px-4 rounded-lg transition">
+                    Get 20% Off FreshBooks <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Calculation Script -->
+    <script>
+        const inputs = ['hours', 'hourlyRate', 'expenses', 'margin', 'tax'];
+        
+        function calculate() {
+            const hours = parseFloat(document.getElementById('hours').value) || 0;
+            const rate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+            const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+            const margin = parseFloat(document.getElementById('margin').value) || 0;
+            const tax = parseFloat(document.getElementById('tax').value) || 0;
+
+            const baseLabor = hours * rate;
+            const subtotal = baseLabor + expenses;
+            const marginVal = subtotal * (margin / 100);
+            const preTaxTotal = subtotal + marginVal;
+            const taxVal = preTaxTotal * (tax / 100);
+            const total = preTaxTotal + taxVal;
+
+            document.getElementById('baseLabor').innerText = `$${baseLabor.toFixed(2)}`;
+            document.getElementById('marginVal').innerText = `$${marginVal.toFixed(2)}`;
+            document.getElementById('taxVal').innerText = `$${taxVal.toFixed(2)}`;
+            document.getElementById('totalQuote').innerText = `$${total.toFixed(2)}`;
+        }
+
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', calculate));
+        calculate();
+
+        // Dark mode toggle logic
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            if (document.documentElement.classList.contains('dark')) {
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        });
+    </script>
+</body>
 </html>
+

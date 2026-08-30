@@ -123,44 +123,159 @@
     </main>
 
     <!-- Calculation Script -->
-    <script>
-        const inputs = ['hours', 'hourlyRate', 'expenses', 'margin', 'tax'];
-        
-        function calculate() {
-            const hours = parseFloat(document.getElementById('hours').value) || 0;
-            const rate = parseFloat(document.getElementById('hourlyRate').value) || 0;
-            const expenses = parseFloat(document.getElementById('expenses').value) || 0;
-            const margin = parseFloat(document.getElementById('margin').value) || 0;
-            const tax = parseFloat(document.getElementById('tax').value) || 0;
+    <script><script>
+const inputs = ['hours', 'hourlyRate', 'expenses', 'margin', 'tax'];
 
-            const baseLabor = hours * rate;
-            const subtotal = baseLabor + expenses;
-            const marginVal = subtotal * (margin / 100);
-            const preTaxTotal = subtotal + marginVal;
-            const taxVal = preTaxTotal * (tax / 100);
-            const total = preTaxTotal + taxVal;
+function getValue(id) {
+    const value = parseFloat(document.getElementById(id).value);
+    return Number.isFinite(value) && value >= 0 ? value : 0;
+}
 
-            document.getElementById('baseLabor').innerText = `$${baseLabor.toFixed(2)}`;
-            document.getElementById('marginVal').innerText = `$${marginVal.toFixed(2)}`;
-            document.getElementById('taxVal').innerText = `$${taxVal.toFixed(2)}`;
-            document.getElementById('totalQuote').innerText = `$${total.toFixed(2)}`;
+function money(value) {
+    return '$' + value.toFixed(2);
+}
+
+function calculate() {
+
+    const hours = getValue('hours');
+    const hourlyRate = getValue('hourlyRate');
+    const expenses = getValue('expenses');
+    const margin = getValue('margin');
+    const tax = getValue('tax');
+
+    // Labor
+    const labor = hours * hourlyRate;
+
+    // Cost before profit
+    const subtotal = labor + expenses;
+
+    // Profit
+    const profit = subtotal * (margin / 100);
+
+    // Price before tax
+    const beforeTax = subtotal + profit;
+
+    // Tax
+    const taxValue = beforeTax * (tax / 100);
+
+    // Final quote
+    const total = beforeTax + taxValue;
+
+    // Update results
+    document.getElementById('baseLabor').innerText = money(labor);
+    document.getElementById('marginVal').innerText = money(profit);
+    document.getElementById('taxVal').innerText = money(taxValue);
+    document.getElementById('totalQuote').innerText = money(total);
+
+    // Save values on the device
+    const savedData = {
+        hours,
+        hourlyRate,
+        expenses,
+        margin,
+        tax
+    };
+
+    localStorage.setItem(
+        'estimateFlowData',
+        JSON.stringify(savedData)
+    );
+}
+
+
+// Calculate whenever an input changes
+inputs.forEach(id => {
+
+    const input = document.getElementById(id);
+
+    if (input) {
+        input.addEventListener('input', calculate);
+    }
+
+});
+
+
+// Load previously saved values
+function loadSavedData() {
+
+    const saved = localStorage.getItem('estimateFlowData');
+
+    if (!saved) {
+        calculate();
+        return;
+    }
+
+    try {
+
+        const data = JSON.parse(saved);
+
+        if (data.hours !== undefined)
+            document.getElementById('hours').value = data.hours;
+
+        if (data.hourlyRate !== undefined)
+            document.getElementById('hourlyRate').value = data.hourlyRate;
+
+        if (data.expenses !== undefined)
+            document.getElementById('expenses').value = data.expenses;
+
+        if (data.margin !== undefined)
+            document.getElementById('margin').value = data.margin;
+
+        if (data.tax !== undefined)
+            document.getElementById('tax').value = data.tax;
+
+    } catch (error) {
+        console.log('Could not load saved data.');
+    }
+
+    calculate();
+}
+
+
+// Dark mode
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+if (themeToggle) {
+
+    themeToggle.addEventListener('click', () => {
+
+        document.documentElement.classList.toggle('dark');
+
+        const dark =
+            document.documentElement.classList.contains('dark');
+
+        localStorage.setItem('estimateFlowDark', dark);
+
+        if (themeIcon) {
+
+            themeIcon.classList.toggle('fa-moon', !dark);
+            themeIcon.classList.toggle('fa-sun', dark);
+
         }
 
-        inputs.forEach(id => document.getElementById(id).addEventListener('input', calculate));
-        calculate();
+    });
 
-        // Dark mode toggle logic
-        const themeToggleBtn = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
+}
+
+
+// Load dark mode preference
+if (localStorage.getItem('estimateFlowDark') === 'true') {
+
+    document.documentElement.classList.add('dark');
+
+    if (themeIcon) {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+    }
+
+}
+
+
+// Start calculator
+loadSavedData();
+</script>
         
-        themeToggleBtn.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            if (document.documentElement.classList.contains('dark')) {
-                themeIcon.classList.replace('fa-moon', 'fa-sun');
-            } else {
-                themeIcon.classList.replace('fa-sun', 'fa-moon');
-            }
-        });
     </script>
 </body>
 </html>
